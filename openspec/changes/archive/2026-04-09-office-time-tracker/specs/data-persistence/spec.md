@@ -1,0 +1,27 @@
+## ADDED Requirements
+
+### Requirement: Sessions are saved to localStorage automatically
+The system SHALL save all session data to `localStorage` under the key `office-tracker-sessions` as a JSON-serialised array of session objects. Saving SHALL occur automatically on every state change (clock in, clock out).
+
+#### Scenario: Data persists after page reload
+- **WHEN** the user has one or more sessions and reloads the page
+- **THEN** all sessions SHALL be present in the history list and any active session SHALL resume displaying its running timer
+
+#### Scenario: Data saved on clock in
+- **WHEN** the user clicks "Clock In"
+- **THEN** the new active session SHALL immediately be written to localStorage
+
+#### Scenario: Data saved on clock out
+- **WHEN** the user clicks "Clock Out"
+- **THEN** the completed session SHALL be written to localStorage with `end` and `durationMs` populated
+
+### Requirement: App loads saved data on startup
+The system SHALL read from localStorage on page load and restore all sessions (including any in-progress session) before rendering the UI.
+
+#### Scenario: Active session restored on reload
+- **WHEN** the user was clocked in and reloads the page
+- **THEN** the app SHALL detect the session with `end: null`, resume the running timer from the original start time, and show the active-session UI
+
+#### Scenario: No data in storage is handled gracefully
+- **WHEN** localStorage contains no data for `office-tracker-sessions`
+- **THEN** the app SHALL start with an empty session list and idle clock-in state without errors

@@ -1,0 +1,45 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/python
+{
+	"name": "Python 3.13 Openspec",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/python:2-3.13-bullseye",
+
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	"features": {
+		"ghcr.io/stu-bell/devcontainer-features/claude-code:0": {},
+    	"ghcr.io/devcontainers/features/node:1": {}
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "npm install -g @fission-ai/openspec@latest",
+
+	// Configure tool-specific properties.
+	"customizations": {
+		"vscode": {
+			// Add the IDs of extensions you want to install.
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"MS-vsliveshare.vsliveshare",
+				"eamodio.gitlens",
+				"anthropic.claude-code",
+				"cweijan.vscode-office",
+				"ms-toolsai.jupyter",
+				"ms-toolsai.datawrangler"
+			]
+		}
+	},
+	"mounts": [
+		// Mount the workspace folder to /workspaces in the container.
+		// This is the default, so you can remove this if you want.
+		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh/,target=/home/vscode/.ssh,type=bind,consistency=cached",
+		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.claude/,target=/home/vscode/.claude,type=bind,consistency=cached"
+	]
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+}
