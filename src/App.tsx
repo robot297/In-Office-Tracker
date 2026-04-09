@@ -2,6 +2,7 @@ import { useSessions } from './hooks/useSessions'
 import ActiveTimer from './components/ActiveTimer'
 import ClockButton from './components/ClockButton'
 import TodaySummary from './components/TodaySummary'
+import MonthlyGoal from './components/MonthlyGoal'
 import SessionHistory from './components/SessionHistory'
 
 export default function App() {
@@ -30,6 +31,11 @@ export default function App() {
             onClockOut={clockOut}
           />
           <TodaySummary sessions={sessions} />
+        </div>
+
+        {/* Monthly attendance goal card */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+          <MonthlyGoal sessions={sessions} />
         </div>
 
         {/* History card */}
