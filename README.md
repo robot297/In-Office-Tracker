@@ -107,6 +107,24 @@ Only completed (clocked-out) sessions count toward the monthly total. Sessions f
 
 The app is a fully static site with no server-side requirements. After running `npm run build`, deploy the contents of the `dist/` folder to any static host (Netlify, Vercel, GitHub Pages, etc.).
 
+### Docker (nginx)
+
+Build the image:
+
+```bash
+docker build -t tracker .
+```
+
+Run the container:
+
+```bash
+docker run -p 8080:80 tracker
+```
+
+The app will be available at [http://localhost:8080](http://localhost:8080).
+
+The Dockerfile uses a multi-stage build — Node 18 compiles the app, and the resulting `dist/` is served by nginx on port 80.
+
 ## Development Container
 
 A VS Code Dev Container is included in [.devcontainer/](.devcontainer/). Open the repo in VS Code and select **Reopen in Container** to get a pre-configured environment with Node.js and all recommended extensions.
