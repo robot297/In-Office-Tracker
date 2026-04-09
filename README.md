@@ -7,6 +7,7 @@ A lightweight, browser-based time tracking app for logging office hours. No back
 - **Clock In / Clock Out** — one-click time tracking
 - **Live Timer** — real-time elapsed time display while clocked in
 - **Today's Summary** — total hours tracked for the current day
+- **Monthly Attendance Goal** — tracks whether you are on pace for 60% in-office attendance based on a 40 h/week schedule, with a color-coded status badge and progress bar
 - **Session History** — full log of past sessions with date, start, end, and duration
 
 ## Tech Stack
@@ -53,6 +54,7 @@ src/
 ├── components/
 │   ├── ActiveTimer.tsx     # Live elapsed-time display
 │   ├── ClockButton.tsx     # Clock In / Clock Out button
+│   ├── MonthlyGoal.tsx     # Monthly attendance goal card
 │   ├── SessionHistory.tsx  # Session table
 │   ├── SessionRow.tsx      # Individual row in the session table
 │   └── TodaySummary.tsx    # Daily total
@@ -60,7 +62,7 @@ src/
 │   └── useSessions.ts      # Core state management
 ├── App.tsx                 # Root layout
 ├── db.ts                   # Dexie database setup
-├── storage.ts              # Utility functions (formatting, totals)
+├── storage.ts              # Utility functions (formatting, totals, attendance logic)
 └── types.ts                # Shared TypeScript interfaces
 ```
 
@@ -78,6 +80,28 @@ interface Session {
 ```
 
 Data stored in the old localStorage format (`office-tracker-sessions`) is automatically migrated on first load.
+
+## Monthly Attendance Goal
+
+The app calculates whether you are on pace to hit **60% in-office attendance** for the current calendar month, assuming a 40 h/week office job (8 h/day).
+
+**How the target is calculated:**
+
+```
+working_days_in_month × 8 h × 0.60 = monthly target hours
+```
+
+Working days are Monday–Friday only (public holidays are not excluded).
+
+**On-pace status** is based on your average daily logged rate compared to the required rate over elapsed working days so far:
+
+| Status | Meaning |
+|--------|---------|
+| **On Track** (green) | Your daily average is ≥ 60% of the required rate |
+| **At Risk** (amber) | Your daily average is 40–59% of the required rate |
+| **Behind** (red) | Your daily average is below 40% of the required rate |
+
+Only completed (clocked-out) sessions count toward the monthly total. Sessions from previous months are excluded.
 
 ## Deployment
 
