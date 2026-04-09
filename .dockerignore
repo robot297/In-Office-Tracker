@@ -1,0 +1,5 @@
+.claude/
+.devcontainer/
+dist/
+node_modules/
+.vscode/
