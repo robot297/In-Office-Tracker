@@ -1,15 +1,53 @@
+import { useCallback } from 'react'
 import { useSessions } from './hooks/useSessions'
+import { useSettings } from './hooks/useSettings'
+import { useAutoClock } from './hooks/useAutoClock'
 import ActiveTimer from './components/ActiveTimer'
 import ClockButton from './components/ClockButton'
 import TodaySummary from './components/TodaySummary'
 import MonthlyGoal from './components/MonthlyGoal'
 import SessionHistory from './components/SessionHistory'
+import AutoClockNotification from './components/AutoClockNotification'
+import NetworkSettings from './components/NetworkSettings'
 
 export default function App() {
   const { sessions, activeSession, clockIn, clockOut } = useSessions()
+  const {
+    networkRules,
+    prefs,
+    addNetworkRule,
+    removeNetworkRule,
+    updateNetworkRule,
+    updatePrefs,
+  } = useSettings()
+
+  const {
+    lastAutoEvent,
+    recordManualClockIn,
+    recordManualClockOut,
+  } = useAutoClock({
+    enabled: prefs.autoClockEnabled,
+    networkRules,
+    pollIntervalMs: prefs.pollIntervalMs,
+    activeSession,
+    clockIn,
+    clockOut,
+  })
+
+  const handleManualClockIn = useCallback(async () => {
+    recordManualClockIn()
+    await clockIn()
+  }, [clockIn, recordManualClockIn])
+
+  const handleManualClockOut = useCallback(async () => {
+    recordManualClockOut()
+    await clockOut()
+  }, [clockOut, recordManualClockOut])
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center px-4 py-10">
+      <AutoClockNotification lastAutoEvent={lastAutoEvent} />
+
       <div className="w-full max-w-lg space-y-6">
 
         {/* Header */}
@@ -27,8 +65,8 @@ export default function App() {
           )}
           <ClockButton
             isActive={activeSession !== null}
-            onClockIn={clockIn}
-            onClockOut={clockOut}
+            onClockIn={handleManualClockIn}
+            onClockOut={handleManualClockOut}
           />
           <TodaySummary sessions={sessions} />
         </div>
@@ -36,6 +74,19 @@ export default function App() {
         {/* Monthly attendance goal card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
           <MonthlyGoal sessions={sessions} />
+        </div>
+
+        {/* Network settings card */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-700 mb-4">Network Settings</h2>
+          <NetworkSettings
+            networkRules={networkRules}
+            prefs={prefs}
+            onAddRule={addNetworkRule}
+            onRemoveRule={removeNetworkRule}
+            onUpdateRule={updateNetworkRule}
+            onUpdatePrefs={updatePrefs}
+          />
         </div>
 
         {/* History card */}

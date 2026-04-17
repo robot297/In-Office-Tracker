@@ -1,4 +1,4 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: User can clock in
 The system SHALL allow the user to start an office session by clicking a "Clock In" button OR via an automatic network detection event. Only one active session SHALL exist at a time.
