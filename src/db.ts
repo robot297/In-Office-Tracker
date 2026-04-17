@@ -1,13 +1,15 @@
 import Dexie, { type Table } from 'dexie'
-import type { Session, NetworkRule, AppSetting } from './types'
+import type { Session, NetworkRule, AppSetting, OOOEntry } from './types'
 
 class TrackerDB extends Dexie {
   // Version history:
   // v1 — initial schema: sessions table with id (pk) and start (index)
   // v2 — added networkRules and appSettings tables for auto-clock feature
+  // v3 — added oooEntries table for out-of-office date management
   sessions!: Table<Session>
   networkRules!: Table<NetworkRule>
   appSettings!: Table<AppSetting>
+  oooEntries!: Table<OOOEntry>
 
   constructor() {
     super('office-tracker')
@@ -18,6 +20,12 @@ class TrackerDB extends Dexie {
       sessions: 'id, start',
       networkRules: 'id',
       appSettings: 'key',
+    })
+    this.version(3).stores({
+      sessions: 'id, start',
+      networkRules: 'id',
+      appSettings: 'key',
+      oooEntries: 'date',
     })
   }
 }

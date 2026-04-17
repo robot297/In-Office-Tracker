@@ -10,17 +10,19 @@ import {
 
 interface Props {
   sessions: Session[]
+  ooWeekdayCount?: number
+  ooWeekdaysPassed?: number
 }
 
-export default function MonthlyGoal({ sessions }: Props) {
+export default function MonthlyGoal({ sessions, ooWeekdayCount = 0, ooWeekdaysPassed = 0 }: Props) {
   const now = new Date()
   const year = now.getFullYear()
   const month = now.getMonth()
 
-  const targetMs = getMonthlyTargetMs(year, month)
+  const targetMs = getMonthlyTargetMs(year, month, ooWeekdayCount)
   const loggedMs = getMonthlyTotalMs(sessions, year, month)
-  const elapsedDays = getElapsedWorkingDays(year, month)
-  const totalDays = getWorkingDaysInMonth(year, month)
+  const elapsedDays = getElapsedWorkingDays(year, month, ooWeekdaysPassed)
+  const totalDays = Math.max(0, getWorkingDaysInMonth(year, month) - ooWeekdayCount)
   const status = getAttendanceStatus(loggedMs, targetMs, elapsedDays, totalDays)
 
   const percentage = targetMs > 0 ? (loggedMs / targetMs) * 100 : 0
@@ -63,6 +65,12 @@ export default function MonthlyGoal({ sessions }: Props) {
           <span className="font-semibold">{formatDuration(targetMs)}</span>
         </span>
       </div>
+
+      {ooWeekdayCount > 0 && (
+        <p className="text-xs text-blue-600">
+          {ooWeekdayCount} day{ooWeekdayCount !== 1 ? 's' : ''} out of office applied
+        </p>
+      )}
     </div>
   )
 }

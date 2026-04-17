@@ -2,6 +2,8 @@ import { useCallback } from 'react'
 import { useSessions } from './hooks/useSessions'
 import { useSettings } from './hooks/useSettings'
 import { useAutoClock } from './hooks/useAutoClock'
+import { useOOOEntries } from './hooks/useOOOEntries'
+import { countOOOWeekdays } from './storage'
 import ActiveTimer from './components/ActiveTimer'
 import ClockButton from './components/ClockButton'
 import TodaySummary from './components/TodaySummary'
@@ -9,6 +11,7 @@ import MonthlyGoal from './components/MonthlyGoal'
 import SessionHistory from './components/SessionHistory'
 import AutoClockNotification from './components/AutoClockNotification'
 import NetworkSettings from './components/NetworkSettings'
+import OOOSettings from './components/OOOSettings'
 
 export default function App() {
   const { sessions, activeSession, clockIn, clockOut } = useSessions()
@@ -20,6 +23,11 @@ export default function App() {
     updateNetworkRule,
     updatePrefs,
   } = useSettings()
+  const { oooDates, addOOO, removeOOO } = useOOOEntries()
+
+  const now = new Date()
+  const ooWeekdayCount = countOOOWeekdays(oooDates, now.getFullYear(), now.getMonth())
+  const ooWeekdaysPassed = countOOOWeekdays(oooDates, now.getFullYear(), now.getMonth(), now)
 
   const {
     lastAutoEvent,
@@ -73,7 +81,16 @@ export default function App() {
 
         {/* Monthly attendance goal card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          <MonthlyGoal sessions={sessions} />
+          <MonthlyGoal
+            sessions={sessions}
+            ooWeekdayCount={ooWeekdayCount}
+            ooWeekdaysPassed={ooWeekdaysPassed}
+          />
+        </div>
+
+        {/* Out of office card */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+          <OOOSettings oooDates={oooDates} onAdd={addOOO} onRemove={removeOOO} />
         </div>
 
         {/* Network settings card */}
