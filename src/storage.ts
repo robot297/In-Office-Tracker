@@ -30,9 +30,10 @@ export function getWorkingDaysInMonth(year: number, month: number): number {
   return count
 }
 
-// Returns the monthly in-office target in milliseconds: workingDays × 8h × 60%.
-export function getMonthlyTargetMs(year: number, month: number): number {
-  return getWorkingDaysInMonth(year, month) * 8 * 60 * 60 * 1000 * 0.6
+// Returns the monthly in-office target in milliseconds: (workingDays − ooWeekdayCount) × 8h × 60%.
+export function getMonthlyTargetMs(year: number, month: number, ooWeekdayCount = 0): number {
+  const adjustedDays = Math.max(0, getWorkingDaysInMonth(year, month) - ooWeekdayCount)
+  return adjustedDays * 8 * 60 * 60 * 1000 * 0.6
 }
 
 // Returns completed sessions whose start falls in the given month.
@@ -49,8 +50,8 @@ export function getMonthlyTotalMs(sessions: Session[], year: number, month: numb
   return getMonthSessions(sessions, year, month).reduce((sum, s) => sum + (s.durationMs ?? 0), 0)
 }
 
-// Returns the number of Mon–Fri days from the 1st through today, capped at total working days.
-export function getElapsedWorkingDays(year: number, month: number): number {
+// Returns the number of Mon–Fri days from the 1st through today, minus OOO weekdays already passed.
+export function getElapsedWorkingDays(year: number, month: number, ooWeekdaysPassed = 0): number {
   const today = new Date()
   const lastDay = today.getFullYear() === year && today.getMonth() === month
     ? today.getDate()
@@ -60,7 +61,26 @@ export function getElapsedWorkingDays(year: number, month: number): number {
     const dow = new Date(year, month, day).getDay()
     if (dow !== 0 && dow !== 6) count++
   }
-  return Math.min(count, getWorkingDaysInMonth(year, month))
+  return Math.max(0, Math.min(count, getWorkingDaysInMonth(year, month)) - ooWeekdaysPassed)
+}
+
+// Counts OOO dates that are weekdays within the given month, optionally capped at upToDate.
+export function countOOOWeekdays(oooDates: string[], year: number, month: number, upToDate?: Date): number {
+  return oooDates.filter((dateStr) => {
+    const parts = dateStr.split('-')
+    const y = parseInt(parts[0], 10)
+    const m = parseInt(parts[1], 10) - 1
+    const d = parseInt(parts[2], 10)
+    if (y !== year || m !== month) return false
+    const date = new Date(y, m, d)
+    const dow = date.getDay()
+    if (dow === 0 || dow === 6) return false
+    if (upToDate) {
+      const upToNorm = new Date(upToDate.getFullYear(), upToDate.getMonth(), upToDate.getDate())
+      if (date > upToNorm) return false
+    }
+    return true
+  }).length
 }
 
 // Returns attendance status based on pace vs. target.

@@ -1,3 +1,5 @@
+## MODIFIED Requirements
+
 ### Requirement: Monthly target hours are computed from working days
 The system SHALL calculate the required in-office hours for the current calendar month as: `(count(Monday–Friday days in month) − count(OOO weekdays in month)) × 8 × 0.60`. A working day is excluded from the count if it has a matching entry in `oooEntries`.
 
@@ -17,35 +19,7 @@ The system SHALL calculate the required in-office hours for the current calendar
 - **WHEN** every Monday–Friday in the month is marked as OOO
 - **THEN** the target SHALL be 0 and the progress bar SHALL display as fully complete
 
-### Requirement: Monthly logged hours are aggregated from completed sessions
-The system SHALL sum the `durationMs` of all completed sessions (where `end !== null`) whose `start` falls within the current calendar month, and display the result as hours and minutes.
-
-#### Scenario: Sessions from current month are included
-- **WHEN** completed sessions exist with a `start` timestamp in the current calendar month
-- **THEN** their durations SHALL be summed and displayed as the monthly total
-
-#### Scenario: Sessions from prior months are excluded
-- **WHEN** completed sessions exist with a `start` timestamp before the current calendar month
-- **THEN** those sessions SHALL NOT contribute to the monthly total
-
-#### Scenario: Active (in-progress) sessions are excluded
-- **WHEN** a session is currently active (end === null)
-- **THEN** it SHALL NOT be counted toward the monthly total
-
-### Requirement: Monthly attendance percentage is displayed
-The system SHALL display the percentage of the monthly target achieved: `(monthly_logged_ms / monthly_target_ms) × 100`, rounded to one decimal place.
-
-#### Scenario: Percentage shown when hours are logged
-- **WHEN** the user has logged hours this month
-- **THEN** the system SHALL display the attendance percentage
-
-#### Scenario: Zero percentage shown at month start
-- **WHEN** no completed sessions exist for the current month
-- **THEN** the system SHALL display 0% or equivalent zero state
-
-### Requirement: On-pace status is shown based on elapsed working days
-The system SHALL compare the user's logged rate (hours per elapsed working day so far) against the required rate (target hours / total working days in month) and display one of three statuses: On Track (≥ 60% pace), At Risk (40–59% pace), or Behind (< 40% pace).
-
+### Requirement: On-pace status accounts for OOO days in the elapsed count
 The system SHALL compute the on-pace status using elapsed working days minus OOO weekdays that have already passed (on or before today), so that past OOO days do not count as missed office days.
 
 #### Scenario: Elapsed working days exclude past OOO days
@@ -67,17 +41,6 @@ The system SHALL compute the on-pace status using elapsed working days minus OOO
 #### Scenario: Behind status when pace is insufficient after OOO adjustment
 - **WHEN** the user's logged hours per adjusted elapsed working day is below 40% of the adjusted daily target rate
 - **THEN** the status indicator SHALL display "Behind" with a red visual treatment
-
-### Requirement: A progress bar visualizes completion toward the monthly goal
-The system SHALL display a horizontal progress bar that fills proportionally to `monthly_logged_ms / monthly_target_ms`, capped at 100%.
-
-#### Scenario: Progress bar reflects logged percentage
-- **WHEN** the user has logged 30% of the monthly target
-- **THEN** the progress bar SHALL be approximately 30% filled
-
-#### Scenario: Progress bar is capped at 100%
-- **WHEN** the user has exceeded the monthly target
-- **THEN** the progress bar SHALL display as fully filled (100%) without overflow
 
 ### Requirement: OOO day count is displayed alongside the monthly target
 The system SHALL display the number of OOO weekdays applied in the current month next to or below the target figure, so the user can see at a glance that the target has been adjusted.

@@ -17,3 +17,7 @@ export interface AppSetting {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any
 }
+
+export interface OOOEntry {
+  date: string  // ISO YYYY-MM-DD, primary key
+}
