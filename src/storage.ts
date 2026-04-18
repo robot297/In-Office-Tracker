@@ -1,4 +1,5 @@
 import type { Session } from './types'
+import type { DayStatus } from './components/CalendarDay'
 
 export function getActiveSession(sessions: Session[]): Session | null {
   return sessions.find((s) => s.end === null) ?? null
@@ -81,6 +82,43 @@ export function countOOOWeekdays(oooDates: string[], year: number, month: number
     }
     return true
   }).length
+}
+
+// Returns a DayStatus for every day of the given month, keyed by YYYY-MM-DD.
+// Priority: in-office > out-of-office > future (today or later) > no-data > weekend
+export function getMonthDayStatuses(
+  sessions: Session[],
+  oooDates: string[],
+  year: number,
+  month: number,
+): Map<string, DayStatus> {
+  const sessionDates = new Set(
+    sessions
+      .filter((s) => s.end !== null)
+      .map((s) => s.start.slice(0, 10)),
+  )
+  const oooSet = new Set(oooDates)
+  const today = new Date()
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const result = new Map<string, DayStatus>()
+  for (let day = 1; day <= daysInMonth; day++) {
+    const d = new Date(year, month, day)
+    const key = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+    const dow = d.getDay()
+    if (sessionDates.has(key)) {
+      result.set(key, 'in-office')
+    } else if (oooSet.has(key)) {
+      result.set(key, 'out-of-office')
+    } else if (dow === 0 || dow === 6) {
+      result.set(key, 'weekend')
+    } else if (key >= todayStr) {
+      result.set(key, 'future')
+    } else {
+      result.set(key, 'no-data')
+    }
+  }
+  return result
 }
 
 // Returns attendance status based on pace vs. target.
