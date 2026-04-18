@@ -15,7 +15,7 @@ import OOOSettings from './components/OOOSettings'
 import AttendanceCalendar from './components/AttendanceCalendar'
 
 export default function App() {
-  const { sessions, activeSession, clockIn, clockOut } = useSessions()
+  const { sessions, activeSession, clockIn, clockOut, updateSession } = useSessions()
   const {
     networkRules,
     prefs,
@@ -116,7 +116,7 @@ export default function App() {
         {/* History card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-700 mb-4">Session History</h2>
-          <SessionHistory sessions={sessions} />
+          <SessionHistory sessions={sessions} updateSession={updateSession} />
         </div>
 
       </div>

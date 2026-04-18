@@ -28,6 +28,13 @@ class TrackerDB extends Dexie {
       oooEntries: 'date',
     })
   }
+
+  async updateSession(
+    id: string,
+    patch: { start: string; end: string; durationMs: number }
+  ): Promise<void> {
+    await this.sessions.update(id, patch)
+  }
 }
 
 export const db = new TrackerDB()
