@@ -12,6 +12,7 @@ import SessionHistory from './components/SessionHistory'
 import AutoClockNotification from './components/AutoClockNotification'
 import NetworkSettings from './components/NetworkSettings'
 import OOOSettings from './components/OOOSettings'
+import AttendanceCalendar from './components/AttendanceCalendar'
 
 export default function App() {
   const { sessions, activeSession, clockIn, clockOut } = useSessions()
@@ -86,6 +87,12 @@ export default function App() {
             ooWeekdayCount={ooWeekdayCount}
             ooWeekdaysPassed={ooWeekdaysPassed}
           />
+        </div>
+
+        {/* Attendance calendar card */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-700 mb-4">Attendance Calendar</h2>
+          <AttendanceCalendar sessions={sessions} oooDates={oooDates} />
         </div>
 
         {/* Out of office card */}
