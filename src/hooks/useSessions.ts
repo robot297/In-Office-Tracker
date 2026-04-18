@@ -56,5 +56,13 @@ export function useSessions() {
     )
   }
 
-  return { sessions, activeSession, clockIn, clockOut }
+  async function updateSession(id: string, start: string, end: string) {
+    const durationMs = new Date(end).getTime() - new Date(start).getTime()
+    await db.updateSession(id, { start, end, durationMs })
+    setSessions((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, start, end, durationMs } : s))
+    )
+  }
+
+  return { sessions, activeSession, clockIn, clockOut, updateSession }
 }
