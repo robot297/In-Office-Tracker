@@ -29,7 +29,8 @@
 				"anthropic.claude-code",
 				"cweijan.vscode-office",
 				"ms-toolsai.jupyter",
-				"ms-toolsai.datawrangler"
+				"ms-toolsai.datawrangler",
+				"github.vscode-github-actions"
 			]
 		}
 	},
