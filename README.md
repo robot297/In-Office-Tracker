@@ -125,6 +125,15 @@ The app will be available at [http://localhost:8080](http://localhost:8080).
 
 The Dockerfile uses a multi-stage build — Node 18 compiles the app, and the resulting `dist/` is served by nginx on port 80.
 
+### CI: GitHub Actions — Publish Docker image
+
+This repository includes a GitHub Actions workflow that builds the Docker image and publishes it to GitHub Container Registry (GHCR). Optionally, it can also push to Docker Hub when the `DOCKER_USERNAME` and `DOCKER_PASSWORD` secrets are configured in the repository settings.
+
+- **Required secrets (optional):** `DOCKER_USERNAME`, `DOCKER_PASSWORD` (for Docker Hub)
+- **Automatic publishing:** GHCR publishing uses the workflow's `GITHUB_TOKEN` and requires the `packages: write` permission (configured in the workflow).
+
+To trigger a publish, push to the `main` branch or create a pull request; the workflow runs on those events. To publish a release-tagged image, push a git tag and the workflow will pick up the change when it runs on `main`.
+
 ## Development Container
 
 A VS Code Dev Container is included in [.devcontainer/](.devcontainer/). Open the repo in VS Code and select **Reopen in Container** to get a pre-configured environment with Node.js and all recommended extensions.
